@@ -30,36 +30,21 @@ namespace PgnDoctor
         {
             inputTextBox.SelectAll();
         }
-        private string ConvertToValidPgn(string pgn)
+        private string ConvertToValidPgn(string input)
         {
-            StringBuilder sb = new StringBuilder();
-            int i = 0;
-            while (i < pgn.Length)
-            {
-                if (pgn[i] == '+' || pgn[i] == '#' || ((pgn[i] == 'O' || pgn[i] == 'o') && i + 1 < pgn.Length && pgn[i + 1] != '-'))
-                {
-                    sb.Append(pgn[i]);
-                    if (i + 1 < pgn.Length && pgn[i + 1] != ' ')
-                    {
-                        sb.Append(' ');
-                    }
-
-                }
-                else if (Char.IsDigit(pgn[i]))
-                {
-                    sb.Append(pgn[i]);
-                    if (i > 0 && pgn[i - 1] != '+' && pgn[i - 1] != '#' && !Char.IsDigit(pgn[i - 1]) && i + 1 < pgn.Length && pgn[i + 1] != ' ' && pgn[i + 1] != '.' && pgn[i + 1] != '-' && pgn[i + 1] != '+' && pgn[i + 1] != '#' && pgn[i + 1] != '/')
-                        sb.Append(' ');
-                }
-                else
-                {
-                    sb.Append(pgn[i]);
-                }
-                i++;
-            }
-
-            return sb.ToString();
+            return AddSpaces(input);
         }
 
+        public static string AddSpaces(string input)
+        {
+            string output = Regex.Replace(input, @"([+#])(?!\s)", "$1 ");
+            output = Regex.Replace(output, @"-o(?![\s+#])|(?<!-o)-O(?![\s+#])|(?<!-o)(?<!-O)-o(?![\s+#])", "-O ");
+            output = Regex.Replace(output, @"(?<!\s)(1-0|0-1|1/2-1/2)(?!\s)", " $1");
+            output = Regex.Replace(output, @"=([a-zA-Z])(?![+#\s])", "=$1 ");
+            output = Regex.Replace(output, @"(?<![+\sOo])(\d)(\d+)(?=\.\s)|(?<=\d)(?=[A-Za-z])", "$1 $2");
+            return output;
+        }
     }
 }
+
+
