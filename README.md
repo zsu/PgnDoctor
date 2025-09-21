@@ -1,4 +1,4 @@
-# PgnDoctor 2
+# PgnDoctor
 Fix pgn invalid format issues.
 
 # Usage
